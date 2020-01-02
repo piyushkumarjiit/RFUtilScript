@@ -97,40 +97,41 @@ else
 		let j+=1
 	  fi
 	done
-echo "--------------------"
+	echo "--------------------"
 
-echo Captured codes saved in CapturedCodes.txt
-sleep 1
+	echo Captured codes saved in CapturedCodes.txt
+	sleep 1
 
-#Testing Codes
-echo "Ensure PINs are connected in order { GPIO17 | 5V | Ground } when the transmitter's non flat side is facing you."
-sleep 2
-echo "To test we will be tunring ON all switches and then turning them all OFF"
-sleep 1
-i=1
-j=1
-echo ON commands >> RFCommands.txt
-for n in "${OnCodes[@]}"
-do
-  echo Turning on $i
-  code=$( echo $n | awk '/Received/ {print $2}')
-  #echo $code
-  /var/www/rfoutlet/codesend $code
-  echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
-  let i+=1
-  sleep 1
-done
-echo OFF commands >> RFCommands.txt
-for n in "${OffCodes[@]}"
-do
-  echo Turning OFF $j
-  code=$( echo $n | awk '/Received/ {print $2}')
-  #echo $code
-  /var/www/rfoutlet/codesend $code
-  echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
-  let j+=1
-  sleep 1
-done
+	#Testing Codes
+	echo "Ensure PINs are connected in order { GPIO17 | 5V | Ground } when the transmitter's non flat side is facing you."
+	sleep 2
+	echo "To test we will be tunring ON all switches and then turning them all OFF"
+	sleep 1
+	i=1
+	j=1
+	echo $date >> RFCommands.txt
+	echo ON commands >> RFCommands.txt
+	for n in "${OnCodes[@]}"
+	do
+	  echo Turning on $i
+	  code=$( echo $n | awk '/Received/ {print $2}')
+	  #echo $code
+	  /var/www/rfoutlet/codesend $code
+	  echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
+	  let i+=1
+	  sleep 1
+	done
+	echo OFF commands >> RFCommands.txt
+	for n in "${OffCodes[@]}"
+	do
+	  echo Turning OFF $j
+	  code=$( echo $n | awk '/Received/ {print $2}')
+	  #echo $code
+	  /var/www/rfoutlet/codesend $code
+	  echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
+	  let j+=1
+	  sleep 1
+	done
 
-echo "RF433 related procesing done."
+	echo "RF433 related procesing done."
 fi
