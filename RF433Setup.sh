@@ -7,7 +7,7 @@ wiringpi_present=$(gpio -v > /dev/null 2>&1; echo $?)
 if [[ $wiringpi_present -gt "1" ]]
 then
 	echo "Installing WiringPi."
-	sudo apt-get install wiringpi
+	sudo apt-get install -y  wiringpi
 	echo "WiringPi installed."
 else
 	echo "WiringPi is present. Continuing without adding."
@@ -23,7 +23,7 @@ else
 	if [[ $git_present -gt "1" ]]
 	then
 		echo "Installing Git."
-		sudo apt-get install git
+		sudo apt-get install -y git
 		echo "Git installed."
 	else
 		echo "Git is present. Continuing without adding."
@@ -41,9 +41,10 @@ else
 	OffCodes=()
 	i=0
 	j=1
-	rm CapturedCodes.txt
 	echo "Ensure PINs are connected in order { 5V | Empty | GPIO 27 | Ground } when the transmitter's non flat side is facing you."
 	sleep 1
+	printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1 
+	echo $date >> CapturedCodes.txt
 	echo Point your remote towards the sensor and be ready.
 	echo Starting ON code capture >>  btnout.txt
 	while [ $i -lt 5 ]
@@ -97,18 +98,9 @@ else
 	  fi
 	done
 echo "--------------------"
-rm RFCommands.txt
-echo Captured ON Codes:
-for n in "${OnCodes[@]}"
-do
-  echo $n
-done
 
-echo Captured OFF Codes:
-for n in "${OffCodes[@]}"
-do
-  echo $n
-done	
+echo Captured codes saved in CapturedCodes.txt
+sleep 1
 
 #Testing Codes
 echo "Ensure PINs are connected in order { GPIO17 | 5V | Ground } when the transmitter's non flat side is facing you."
