@@ -89,7 +89,7 @@ do
 	echo ON Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
 	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	$onVal >> CapturedCodes.txt
+	echo $onVal >> CapturedCodes.txt
 	#Save in Array
 	OnCodes[$i]=$onVal
 	echo $onVal >> CapturedCodes.txt
@@ -103,7 +103,7 @@ do
 	echo OFF Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
 	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	$offVal >> CapturedCodes.txt
+	echo $offVal >> CapturedCodes.txt
 	#Save in Array
 	OffCodes[$i]=$offVal
 	echo $offVal >> CapturedCodes.txt
