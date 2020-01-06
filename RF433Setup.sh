@@ -35,83 +35,84 @@ else
 	sudo chown root.root /var/www/rfoutlet/codesend
 	sudo chmod 755 /var/www/rfoutlet/codesend
 	echo "Permission updated."
+	#Delete files no longer needed
+	sudo rm /var/www/rfoutlet/index.html
+	sudo rm /var/www/rfoutlet/script.js
+	sudo rm /var/www/rfoutlet/toggle.php
+	sudo rm /var/www/rfoutlet/README.md
 fi
 
 #Run sniffer to read and save the codes
 OnCodes=()
 OffCodes=()
-i=0
-j=1
+arr_index=0
+button_count=1
 echo "Ensure PINs are connected in order { 5V | Empty | GPIO 27 | Ground } when the transmitter's non flat side is facing you."
 sleep 1
 cd ~
 #Download the device.db file from github
 wget https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db
 #Add date to the file
-printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1 
-echo $date >> CapturedCodes.txt
+printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1
+echo "Codes captured on: " $date >> CapturedCodes.txt
 echo Point your remote towards the sensor and be ready.
-echo Starting ON code capture >>  btnout.txt
-while [ $i -lt 5 ]
+
+while [ $arr_index -lt 5 ]
 do
-  if [ $i -lt 4 ]
+  if [ $arr_index -lt 4 ]
   then
-	echo Press ON buton for $j
-	#Outout saved to file
-	echo ON Code captured for $j  >>  btnout.txt
+	echo Press ON buton for $button_count
 	#Command that ensures unbufferd write that only captures the first line of output.
 	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	echo $onVal >> CapturedCodes.txt
 	#Save in Array
-	OnCodes[$i]=$onVal
+	OnCodes[$arr_index]=$onVal
+	#Outout saved to file
+	echo "On code for button "$button_count ": " $onVal >> CapturedCodes.txt
 	echo "Code captured."
 	sed -i "s/<rfcodeon>/$onVal/" device.db
 	echo "Code added to device.db"
 	#Wait so that user is able to move to the next button
 	sleep 3
 	
-	echo Press OFF buton for $j
-	echo OFF Code captured for $j  >>  btnout.txt
+	echo Press OFF buton for $button_count
 	#Command that ensures unbufferd write that only captures the first line of output.
 	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	OffCodes[$i]=$offVal
-	echo $offVal >> CapturedCodes.txt
+	OffCodes[$arr_index]=$offVal
+	#Outout saved to file
+	echo "Off code for button "$button_count ": " $offVal >> CapturedCodes.txt
 	echo "Code captured."
 	sed -i "s/<rfcodeoff>/$offVal/" device.db
 	echo "Code added to device.db"
 	sleep 3
-	let i+=1
-	let j+=1
+	let arr_index+=1
+	let button_count+=1
   else
 	#Different message and sleep setting for last code capture.
-	echo Press ON buton for $j
-	#Outout saved to file
-	echo ON Code captured for $j  >>  btnout.txt
+	echo Press ON buton for $button_count
 	#Command that ensures unbufferd write to file that only captures the first line of output.
 	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	echo $onVal >> CapturedCodes.txt
 	#Save in Array
-	OnCodes[$i]=$onVal
-	echo $onVal >> CapturedCodes.txt
+	OnCodes[$arr_index]=$onVal
+	#Outout saved to file
+	echo "On code for button "$button_count ": " $onVal >> CapturedCodes.txt
 	echo "Code captured."
 	sed -i "s/<rfcodeon>/$onVal/" device.db
 	echo "Code added to device.db"
 	#Wait so that user is able to move to the next button
 	sleep 3
 	
-	echo Press OFF buton for $j
-	echo OFF Code captured for $j  >>  btnout.txt
+	echo Press OFF buton for $button_count
 	#Command that ensures unbufferd write to file that only captures the first line of output.
 	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	echo $offVal >> CapturedCodes.txt
 	#Save in Array
-	OffCodes[$i]=$offVal
-	echo $offVal >> CapturedCodes.txt
+	OffCodes[$arr_index]=$offVal
+	#Outout saved to file
+	echo "Off code for button "$button_count ": " $offVal >> CapturedCodes.txt
 	echo "Code captured."
 	sed -i "s/<rfcodeoff>/$offVal/" device.db
 	echo "Code added to device.db"
-	let i+=1
-	let j+=1
+	let arr_index+=1
+	let button_count+=1
   fi
 done
 echo "--------------------"
@@ -124,29 +125,28 @@ echo "Ensure PINs are connected in order { GPIO17 | 5V | Ground } when the trans
 sleep 2
 echo "To test we will be tunring ON all switches and then turning them all OFF"
 sleep 1
-i=1
-j=1
-echo $date >> RFCommands.txt
+
+button_count=1
+echo "Commands added on: "$date >> RFCommands.txt
 echo ON commands >> RFCommands.txt
 for n in "${OnCodes[@]}"
 do
-  echo Turning on $i
-  #code=$( echo $n | awk '/Received/ {print $2}')
-  code=$n
-  /var/www/rfoutlet/codesend $code
-  echo codesend $code >> RFCommands.txt
-  let i+=1
-  sleep 1
-done
-echo OFF commands >> RFCommands.txt
-for n in "${OffCodes[@]}"
-do
-  echo Turning OFF $j
-  #code=$( echo $n | awk '/Received/ {print $2}')
+  echo Turning on $button_count
   code=$n
   /var/www/rfoutlet/codesend $code
   echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
-  let j+=1
+  let button_count+=1
+  sleep 1
+done
+button_count=1
+echo OFF commands >> RFCommands.txt
+for n in "${OffCodes[@]}"
+do
+  echo Turning OFF $button_count
+  code=$n
+  /var/www/rfoutlet/codesend $code
+  echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
+  let button_count+=1
   sleep 1
 done
 
