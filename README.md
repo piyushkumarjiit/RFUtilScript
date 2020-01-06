@@ -47,7 +47,7 @@ Individual outlets can also be tested by executing commands saved by the script 
 This project is licensed under the Apache License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
-Thanks to below URLs for providing me the necessary understanding and code to come up with this script.
+Thanks to below URLs for providing me the necessary understanding and libraries to create this script.
 <li>https://www.DuckDuckGo.com</li>
 <li>https://github.com/timleland/rfoutlet/tree/master/RFSource</li>
 <li>https://projects.drogon.net/raspberry-pi/wiringpi/the-gpio-utility/</li>
