@@ -17,6 +17,7 @@ Connect your 433 RF outlets to wall socket and use your RF remote to confirm the
 <li>SSH access to Raspberry Pi</li>
 <li>Access to Internet</li>
 
+
 Before running the script please ensure that you have connected the PINs correctly for RF433 transmitter as well as reciever module.
 
 For Reciever: (5V | Empty | GPIO 27 | Ground)
