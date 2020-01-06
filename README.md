@@ -30,8 +30,10 @@ One also needs to ensure that your outlets are connected and respective RF remot
 
 ### Installing
 Download the script using command <code>wget https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/HaBridgeOnPi.sh</code>
-update permissions using <code>chmod 755 HaBridgeOnPi.sh</code>
-run the script <code>./RFCodeSniffer.sh | tee RFCodeSniffer.log</code>
+
+Ppdate permissions using <code>chmod 755 HaBridgeOnPi.sh</code>
+
+Run the script <code>./RFCodeSniffer.sh | tee RFCodeSniffer.log</code>
 
 ### Testing
 Upon capture completion, the script power cycles through all the connected RF outlets and provides user a way to verify correct code capture as well as setup.
