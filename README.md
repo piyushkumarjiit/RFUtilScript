@@ -31,7 +31,7 @@ One also needs to ensure that your outlets are connected and respective RF remot
 ### Installing
 Download the script using command <code>wget https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/HaBridgeOnPi.sh</code>
 
-Ppdate permissions using <code>chmod 755 HaBridgeOnPi.sh</code>
+Update permissions using <code>chmod 755 HaBridgeOnPi.sh</code>
 
 Run the script <code>./RFCodeSniffer.sh | tee RFCodeSniffer.log</code>
 
