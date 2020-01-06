@@ -51,7 +51,7 @@ echo "Ensure PINs are connected in order { 5V | Empty | GPIO 27 | Ground } when 
 sleep 1
 cd ~
 #Download the device.db file from github
-wget https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db
+wget "https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db"
 #Add date to the file
 printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1
 echo "Codes captured on: " $date >> CapturedCodes.txt
