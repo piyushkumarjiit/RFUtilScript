@@ -3,7 +3,7 @@
 Automated script to configure RF433 outlets
 
 This script combines and streamlines the installation/configuration of RF433 utilities on Raspberry Pi.
-It uses the WiringPi and RFOutlet (courtsey: https://github.com/timleland/rfoutlet/tree/master/RFSource) to control RF 433 outlets.
+It uses the WiringPi and RFOutlet to control RF 433 outlets.
 I have tested them out on ETeckCity outlets but it should work on other 433s without issues.
 
 ## Getting Started
