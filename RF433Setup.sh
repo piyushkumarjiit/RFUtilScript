@@ -54,18 +54,15 @@ echo Point your remote towards the sensor and be ready.
 echo Starting ON code capture >>  btnout.txt
 while [ $i -lt 5 ]
 do
-  #timeout is used to run the subscript for 5 seconds and exit if subscript is not killed/finished already.
-  #timeout 5 /home/pi/SubSniffer.sh
   if [ $i -lt 4 ]
   then
 	echo Press ON buton for $j
 	#Outout saved to file
 	echo ON Code captured for $j  >>  btnout.txt
-	#Command that ensures unbufferd write to file that only captures the first line of output.
-	#stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
+	#Command that ensures unbufferd write that only captures the first line of output.
 	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
 	echo $onVal >> CapturedCodes.txt
-	#Save in Array. If we do not use unbuffered it continues to wait for input untill stopped.
+	#Save in Array
 	OnCodes[$i]=$onVal
 	echo "Code captured."
 	sed -i "s/<rfcodeon>/$onVal/" device.db
@@ -75,8 +72,7 @@ do
 	
 	echo Press OFF buton for $j
 	echo OFF Code captured for $j  >>  btnout.txt
-	#Command that ensures unbufferd write to file that only captures the first line of output.
-	#stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
+	#Command that ensures unbufferd write that only captures the first line of output.
 	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
 	OffCodes[$i]=$offVal
 	echo $offVal >> CapturedCodes.txt
@@ -92,8 +88,8 @@ do
 	#Outout saved to file
 	echo ON Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
-	stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
 	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+	$onVal >> CapturedCodes.txt
 	#Save in Array
 	OnCodes[$i]=$onVal
 	echo $onVal >> CapturedCodes.txt
@@ -106,8 +102,8 @@ do
 	echo Press OFF buton for $j
 	echo OFF Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
-	stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
 	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+	$offVal >> CapturedCodes.txt
 	#Save in Array
 	OffCodes[$i]=$offVal
 	echo $offVal >> CapturedCodes.txt
@@ -135,10 +131,9 @@ echo ON commands >> RFCommands.txt
 for n in "${OnCodes[@]}"
 do
   echo Turning on $i
-  code=$( echo $n | awk '/Received/ {print $2}')
-  #echo $code
+  #code=$( echo $n | awk '/Received/ {print $2}')
+  code=$n
   /var/www/rfoutlet/codesend $code
-  #echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
   echo codesend $code >> RFCommands.txt
   let i+=1
   sleep 1
@@ -147,8 +142,8 @@ echo OFF commands >> RFCommands.txt
 for n in "${OffCodes[@]}"
 do
   echo Turning OFF $j
-  code=$( echo $n | awk '/Received/ {print $2}')
-  #echo $code
+  #code=$( echo $n | awk '/Received/ {print $2}')
+  code=$n
   /var/www/rfoutlet/codesend $code
   echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
   let j+=1
