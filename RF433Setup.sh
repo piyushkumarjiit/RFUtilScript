@@ -52,6 +52,7 @@ sleep 1
 cd ~
 #Download the device.db file from github
 wget "https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db"
+echo "device.db file downloaded."
 
 #Add date to the file
 printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1
