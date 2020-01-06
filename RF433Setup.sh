@@ -44,6 +44,10 @@ i=0
 j=1
 echo "Ensure PINs are connected in order { 5V | Empty | GPIO 27 | Ground } when the transmitter's non flat side is facing you."
 sleep 1
+cd ~
+#Download the device.db file from github
+wget https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db
+#Add date to the file
 printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1 
 echo $date >> CapturedCodes.txt
 echo Point your remote towards the sensor and be ready.
@@ -58,19 +62,27 @@ do
 	#Outout saved to file
 	echo ON Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
-	stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
+	#stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
+	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+	echo $onVal >> CapturedCodes.txt
 	#Save in Array. If we do not use unbuffered it continues to wait for input untill stopped.
-	OnCodes[$i]=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1)
+	OnCodes[$i]=$onVal
 	echo "Code captured."
+	sed -i "s/<rfcodeon>/$onVal/" device.db
+	echo "Code added to device.db"
 	#Wait so that user is able to move to the next button
 	sleep 3
 	
 	echo Press OFF buton for $j
 	echo OFF Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
-	stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
-	OffCodes[$i]=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1)
+	#stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
+	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+	OffCodes[$i]=$offVal
+	echo $offVal >> CapturedCodes.txt
 	echo "Code captured."
+	sed -i "s/<rfcodeoff>/$offVal/" device.db
+	echo "Code added to device.db"
 	sleep 3
 	let i+=1
 	let j+=1
@@ -81,9 +93,13 @@ do
 	echo ON Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
 	stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
+	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
 	#Save in Array
-	OnCodes[$i]=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1)
+	OnCodes[$i]=$onVal
+	echo $onVal >> CapturedCodes.txt
 	echo "Code captured."
+	sed -i "s/<rfcodeon>/$onVal/" device.db
+	echo "Code added to device.db"
 	#Wait so that user is able to move to the next button
 	sleep 3
 	
@@ -91,9 +107,13 @@ do
 	echo OFF Code captured for $j  >>  btnout.txt
 	#Command that ensures unbufferd write to file that only captures the first line of output.
 	stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 >> CapturedCodes.txt
+	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
 	#Save in Array
-	OffCodes[$i]=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1)
+	OffCodes[$i]=$offVal
+	echo $offVal >> CapturedCodes.txt
 	echo "Code captured."
+	sed -i "s/<rfcodeoff>/$offVal/" device.db
+	echo "Code added to device.db"
 	let i+=1
 	let j+=1
   fi
@@ -118,7 +138,8 @@ do
   code=$( echo $n | awk '/Received/ {print $2}')
   #echo $code
   /var/www/rfoutlet/codesend $code
-  echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
+  #echo /var/www/rfoutlet/codesend $code >> RFCommands.txt
+  echo codesend $code >> RFCommands.txt
   let i+=1
   sleep 1
 done
