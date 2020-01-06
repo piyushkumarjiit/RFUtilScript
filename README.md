@@ -8,6 +8,7 @@ I have tested them out on ETeckCity outlets but it should work on other 433s wit
 
 ## Getting Started
 Connect to your Raspberry Pi via SSH (or directly using Terminal) and follow installation instructions.
+
 Connect your 433 RF outlets to wall socket and use your RF remote to confirm they are working.
 
 ### Prerequisites
