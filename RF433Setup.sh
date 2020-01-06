@@ -52,10 +52,12 @@ sleep 1
 cd ~
 #Download the device.db file from github
 wget "https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db"
+
 #Add date to the file
 printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1
 echo "Codes captured on: " $date >> CapturedCodes.txt
 echo Point your remote towards the sensor and be ready.
+echo "--------------------"
 
 while [ $arr_index -lt 5 ]
 do
@@ -123,7 +125,7 @@ sleep 1
 #Testing Codes
 echo "Ensure PINs are connected in order { GPIO17 | 5V | Ground } when the transmitter's non flat side is facing you."
 sleep 2
-echo "To test we will be tunring ON all switches and then turning them all OFF"
+echo "To test we will be turning ON all switches and then turning them all OFF"
 sleep 1
 
 button_count=1
