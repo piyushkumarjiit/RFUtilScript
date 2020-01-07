@@ -54,8 +54,8 @@ echo "Current Directory: " $(pwd)
 #Download the device.db file from github
 wget https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db
 echo "device.db file downloaded."
-echo "Home Directory: " $(Home)
-wget -P $home https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db
+echo "Home Directory: " $Home
+#wget -P $home https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db
 
 #Add date to the file
 printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1
