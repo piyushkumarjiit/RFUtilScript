@@ -67,13 +67,15 @@ then
 	echo "Checking current directory for ExistingCodes.txt"
 	while read line
 	do
-		if [[ $arr_index -lt 6 ]]
-	  	then
+		if [[ ($(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b') > /dev/null 2>&1; echo $?) -gt 1 ]]
+		then
+			echo "$line"
+		else
+			echo "$line"
 			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
 			onVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
 			OnCodes[$arr_index]=$onVal
 			let arr_index+=1
-		else
 			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
 			offVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
 			OffCodes[$arr_index]=$offVal
