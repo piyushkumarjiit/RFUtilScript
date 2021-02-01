@@ -10,7 +10,6 @@ button_count=1
 USE_EXISTING_CODES="true"
 
 
-
 #Install wiringpi if not already installed and fetch the project from github
 wiringpi_present=$(gpio -v > /dev/null 2>&1; echo $?)
 if [[ $wiringpi_present -gt "1" ]]
@@ -67,29 +66,37 @@ if [[ $USE_EXISTING_CODES == "true" ]]
 then
 	#statements
 	echo "Checking current directory for ExistingCodes.txt"
-	while read -r line
+	while read line
 	do
-		OTHER_STRING=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b' > /dev/null 2>&1; echo $? )
-		if [[ $OTHER_STRING == 1 ]]
+		DATE_STRING=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b' > /dev/null 2>&1; echo $? )
+		ON_STRING=$(echo "$line" | grep 'On code for button' > /dev/null 2>&1; echo $? )
+		OFF_STRING=$(echo "$line" | grep 'Off code for button' > /dev/null 2>&1; echo $? )
+		if [[ $DATE_STRING == 1 ]]
 		then
 			echo "Got date: $line"
-			let arr_index+=1
-		else
-			echo "Got Value: $line"
-			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
+		elif [[ $ON_STRING == 0 ]]
+		then
+			echo "Got On String: $line"
+			#echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
 			onVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
+			#awk -v var="$line" '{print $NF}' | grep -E -o '^[0-9]{7}\b'
+			#onVal=$(awk -v var="$line" '{print $NF}' | grep -E -o '^[0-9]{7}\b')
 			OnCodes[$arr_index]=$onVal
 			echo "Code captured: $onVal"
 			sed -i "s/<rfcodeon>/$onVal/" device.db
 			echo "Code added to device.db"
-			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
+		else
+			echo "Got Off String: $line"
+			#echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
 			offVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
+			#awk -v var="$line" '{print $NF}' | grep -E -o '^[0-9]{7}\b'
+			#offVal=$(awk -v var="$line" '{print $NF}' | grep -E -o '^[0-9]{7}\b')
 			OffCodes[$arr_index]=$offVal
 			echo "Code captured: $offVal"
 			sed -i "s/<rfcodeoff>/$offVal/" device.db
-			echo "Code added to device.db"
-			let arr_index+=1
+			echo "Code added to device.db"		
 		fi
+		let arr_index+=1
 	done < ExistingCodes.txt
 else
 	echo "User selected to scan codes."
