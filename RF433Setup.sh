@@ -67,7 +67,8 @@ then
 	echo "Checking current directory for ExistingCodes.txt"
 	while read line
 	do
-		if [[ ($(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b') > /dev/null 2>&1; echo $?) -gt 1 ]]
+		OTHER_STRING=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b' > /dev/null 2>&1; echo $? -gt 1)
+		if [[ $OTHER_STRING -gt 1 ]]
 		then
 			echo "$line"
 		else
