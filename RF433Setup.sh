@@ -67,19 +67,25 @@ then
 	echo "Checking current directory for ExistingCodes.txt"
 	while read line
 	do
-		OTHER_STRING=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b' > /dev/null 2>&1; echo $?)
+		OTHER_STRING=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b' > /dev/null 2>&1; echo $? )
 		if [[ $OTHER_STRING -gt 1 ]]
 		then
 			echo "$line"
+			let arr_index+=1
 		else
 			echo "$line"
 			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
 			onVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
 			OnCodes[$arr_index]=$onVal
-			let arr_index+=1
+			echo "Code captured: $onVal"
+			sed -i "s/<rfcodeon>/$onVal/" device.db
+			echo "Code added to device.db"
 			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
 			offVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
 			OffCodes[$arr_index]=$offVal
+			echo "Code captured: $offVal"
+			sed -i "s/<rfcodeoff>/$offVal/" device.db
+			echo "Code added to device.db"
 			let arr_index+=1
 		fi
 	done < ExistingCodes.txt
