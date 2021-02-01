@@ -2,6 +2,9 @@
 #Abort installation if any of the commands fail
 set -e
 
+#Used existing codes
+USE_EXISTING_CODES="true"
+
 #Install wiringpi if not already installed and fetch the project from github
 wiringpi_present=$(gpio -v > /dev/null 2>&1; echo $?)
 if [[ $wiringpi_present -gt "1" ]]
@@ -57,74 +60,99 @@ echo "device.db file downloaded."
 echo "Home Directory: " $Home
 #wget -P $home https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/device.db
 
-#Add date to the file
-printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1
-echo "Codes captured on: " $date >> CapturedCodes.txt
-echo Point your remote towards the sensor and be ready.
-echo "--------------------"
+#Does user want to reuse existing code values
+if [[ $USE_EXISTING_CODES == "true" ]]
+then
+	#statements
+	echo "Checking current directory for ExistingCodes.txt"
+	while read line
+	do
+		if [[ $arr_index -lt 6 ]]
+	  	then
+			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
+			onVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
+			OnCodes[$arr_index]=$onVal
+			let arr_index+=1
+		else
+			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
+			offVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
+			OffCodes[$arr_index]=$offVal
+			let arr_index+=1
+		fi
+	done < ExistingCodes.txt
+else
+	echo "User selected to scan codes."
 
-while [ $arr_index -lt 5 ]
-do
-  if [ $arr_index -lt 4 ]
-  then
-	echo Press ON buton for $button_count
-	#Command that ensures unbufferd write that only captures the first line of output.
-	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	#Save in Array
-	OnCodes[$arr_index]=$onVal
-	#Outout saved to file
-	echo "On code for button "$button_count ": " $onVal >> CapturedCodes.txt
-	echo "Code captured."
-	sed -i "s/<rfcodeon>/$onVal/" device.db
-	echo "Code added to device.db"
-	#Wait so that user is able to move to the next button
-	sleep 3
-	
-	echo Press OFF buton for $button_count
-	#Command that ensures unbufferd write that only captures the first line of output.
-	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	OffCodes[$arr_index]=$offVal
-	#Outout saved to file
-	echo "Off code for button "$button_count ": " $offVal >> CapturedCodes.txt
-	echo "Code captured."
-	sed -i "s/<rfcodeoff>/$offVal/" device.db
-	echo "Code added to device.db"
-	sleep 3
-	let arr_index+=1
-	let button_count+=1
-  else
-	#Different message and sleep setting for last code capture.
-	echo Press ON buton for $button_count
-	#Command that ensures unbufferd write to file that only captures the first line of output.
-	onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	#Save in Array
-	OnCodes[$arr_index]=$onVal
-	#Outout saved to file
-	echo "On code for button "$button_count ": " $onVal >> CapturedCodes.txt
-	echo "Code captured."
-	sed -i "s/<rfcodeon>/$onVal/" device.db
-	echo "Code added to device.db"
-	#Wait so that user is able to move to the next button
-	sleep 3
-	
-	echo Press OFF buton for $button_count
-	#Command that ensures unbufferd write to file that only captures the first line of output.
-	offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
-	#Save in Array
-	OffCodes[$arr_index]=$offVal
-	#Outout saved to file
-	echo "Off code for button "$button_count ": " $offVal >> CapturedCodes.txt
-	echo "Code captured."
-	sed -i "s/<rfcodeoff>/$offVal/" device.db
-	echo "Code added to device.db"
-	let arr_index+=1
-	let button_count+=1
-  fi
-done
-echo "--------------------"
+	#Add date to the file
+	printf -v date '%(%Y-%m-%d %H:%M:%S)T\n' -1
+	echo "Codes captured on: " $date > CapturedCodes.txt
+	echo Point your remote towards the sensor and be ready.
+	echo "--------------------"
 
-echo Captured codes saved in CapturedCodes.txt
-sleep 1
+	while [[ $arr_index -lt 5 ]]
+	do
+	  if [[ $arr_index -lt 4 ]]
+	  then
+		echo Press ON buton for $button_count
+		#Command that ensures unbufferd write that only captures the first line of output.
+		onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+		#Save in Array
+		OnCodes[$arr_index]=$onVal
+		#Outout saved to file
+		echo "On code for button "$button_count ": " $onVal >> CapturedCodes.txt
+		echo "Code captured."
+		sed -i "s/<rfcodeon>/$onVal/" device.db
+		echo "Code added to device.db"
+		#Wait so that user is able to move to the next button
+		sleep 3
+		
+		echo Press OFF buton for $button_count
+		#Command that ensures unbufferd write that only captures the first line of output.
+		offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+		OffCodes[$arr_index]=$offVal
+		#Outout saved to file
+		echo "Off code for button "$button_count ": " $offVal >> CapturedCodes.txt
+		echo "Code captured."
+		sed -i "s/<rfcodeoff>/$offVal/" device.db
+		echo "Code added to device.db"
+		sleep 3
+		let arr_index+=1
+		let button_count+=1
+	  else
+		#Different message and sleep setting for last code capture.
+		echo Press ON buton for $button_count
+		#Command that ensures unbufferd write to file that only captures the first line of output.
+		onVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+		#Save in Array
+		OnCodes[$arr_index]=$onVal
+		#Outout saved to file
+		echo "On code for button "$button_count ": " $onVal >> CapturedCodes.txt
+		echo "Code captured."
+		sed -i "s/<rfcodeon>/$onVal/" device.db
+		echo "Code added to device.db"
+		#Wait so that user is able to move to the next button
+		sleep 3
+		
+		echo Press OFF buton for $button_count
+		#Command that ensures unbufferd write to file that only captures the first line of output.
+		offVal=$(stdbuf -i0 -o0 -e0 /var/www/rfoutlet/RFSniffer | head -n 1 | awk '/Received/ {print $2}')
+		#Save in Array
+		OffCodes[$arr_index]=$offVal
+		#Outout saved to file
+		echo "Off code for button "$button_count ": " $offVal >> CapturedCodes.txt
+		echo "Code captured."
+		sed -i "s/<rfcodeoff>/$offVal/" device.db
+		echo "Code added to device.db"
+		let arr_index+=1
+		let button_count+=1
+	  fi
+	done
+	echo "--------------------"
+
+	echo Captured codes saved in CapturedCodes.txt
+	sleep 1
+
+fi
 
 #Testing Codes
 echo "Ensure PINs are connected in order { GPIO17 | 5V | Ground } when the transmitter's non flat side is facing you."
