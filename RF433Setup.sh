@@ -2,8 +2,14 @@
 #Abort installation if any of the commands fail
 set -e
 
+OnCodes=()
+OffCodes=()
+arr_index=0
+button_count=1
 #Used existing codes
 USE_EXISTING_CODES="true"
+
+
 
 #Install wiringpi if not already installed and fetch the project from github
 wiringpi_present=$(gpio -v > /dev/null 2>&1; echo $?)
@@ -46,10 +52,6 @@ else
 fi
 
 #Run sniffer to read and save the codes
-OnCodes=()
-OffCodes=()
-arr_index=0
-button_count=1
 echo "Ensure PINs are connected in order { 5V | Empty | GPIO 27 | Ground } when the transmitter's non flat side is facing you."
 sleep 1
 cd ~
@@ -65,15 +67,15 @@ if [[ $USE_EXISTING_CODES == "true" ]]
 then
 	#statements
 	echo "Checking current directory for ExistingCodes.txt"
-	while read line
+	while read -r line
 	do
 		OTHER_STRING=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b' > /dev/null 2>&1; echo $? )
 		if [[ $OTHER_STRING == 1 ]]
 		then
-			echo "$line"
+			echo "Got date: $line"
 			let arr_index+=1
 		else
-			echo "$line"
+			echo "Got Value: $line"
 			echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b'
 			onVal=$(echo "$line" | awk '{print $NF}' | grep -E -o '^[0-9]{7}\b')
 			OnCodes[$arr_index]=$onVal
