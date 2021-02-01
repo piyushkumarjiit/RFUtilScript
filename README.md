@@ -33,11 +33,11 @@ For Transmitter: ( GPIO17 | 5V | Ground )
 One also needs to ensure that your outlets are connected and respective RF remote is working.
 
 ### Installing
-Download the script using command <code>wget https://raw.githubusercontent.com/piyushkumarjiit/HABridgeOnPi/master/HaBridgeOnPi.sh</code>
+Download the script using command <code>wget https://raw.githubusercontent.com/piyushkumarjiit/RFUtilScript/master/RF433Setup.sh</code>
 
-Update permissions using <code>chmod 755 HaBridgeOnPi.sh</code>
+Update permissions using <code>chmod 755 RF433Setup.sh.sh</code>
 
-Run the script <code>./RFCodeSniffer.sh | tee RFCodeSniffer.log</code>
+Run the script <code>./RF433Setup.sh | tee RF433Setup.log</code>
 
 ### Testing
 Upon capture completion, the script power cycles through all the connected RF outlets and provides user a way to verify correct code capture as well as setup.
