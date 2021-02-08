@@ -1,0 +1,12 @@
+ON commands
+/var/www/rfoutlet/codesend 1332531
+/var/www/rfoutlet/codesend 1332675
+/var/www/rfoutlet/codesend 1332995
+/var/www/rfoutlet/codesend 1334531
+/var/www/rfoutlet/codesend 1340675
+OFF commands
+/var/www/rfoutlet/codesend 1332540
+/var/www/rfoutlet/codesend 1332684
+/var/www/rfoutlet/codesend 1333004
+/var/www/rfoutlet/codesend 1334540
+/var/www/rfoutlet/codesend 1340684
